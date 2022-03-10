@@ -129,6 +129,7 @@ router.post('/update/:id', async (req, res) => {
         if (description) {
             updatedNote.description = description
         }
+        // find notes by id
         let notes = await Notes.findById(id)
         if (notes) {
             let notesUpdated = await Notes.findByIdAndUpdate(id, { $set: updatedNote }, { new: true })

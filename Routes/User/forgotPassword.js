@@ -8,22 +8,11 @@ const { body, validationResult } = require('express-validator')
 const User = require('../../Models/User')
 // userverification Otp model
 const UserVerificationOtp = require('../../Models/UserVerificationOtp')
-// generate salt
-const saltRounds = 10
-// email handler
-const nodemailer = require('nodemailer')
+// import sendOtp func
+const sendOtp = require('../../Utils/sendOtp')
 
-// env variables
-require('dotenv').config()
-
-// nodemailer stuff
-let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.AUTH_EMAIL,
-        pass: process.env.AUTH_PASSWORD
-    }
-})
+// import hashData func
+const hashData = require('../../Utils/hashData')
 
 // Endpoint 1: Sending the email and verify the otp
 router.post('/verify', [
@@ -39,8 +28,17 @@ router.post('/verify', [
         if (email) {
             let user = await User.findOne({ email: email })
             if (user) {
+                let msg = `<h1>Password Reset</h1>
+                <h2>Your OTP is given below. Enter this OTP in the app to verify your email address and reset your password.</h2>
+                <h2>This otp expires in 30 minutes.</h2>
+                `
                 // send password reset otp
-                sendOtpVerificationEmail(user, res)
+                await sendOtp(user, msg)
+                res.json({
+                    status: "Pending",
+                    message: "Verification email sent",
+                    userId: user._id
+                })
             }
             else {
                 res.json({
@@ -59,44 +57,6 @@ router.post('/verify', [
         console.log(error)
     }
 })
-
-// send otp verification email to the user
-const sendOtpVerificationEmail = async ({ _id, email }, res) => {
-    try {
-        const otp = `${Math.floor(1000 + Math.random() * 9000)}`
-        const mailOptions = {
-            from: process.env.AUTH_EMAIL,
-            to: email,
-            subject: "Password Reset",
-            html: `<h1>Your OTP is <b>${otp}</b>. Enter this OTP in the app to verify your email address and reset your password</h1><h3>This otp expires in 30 minutes</h3><h4>Please do not share this OTP with anyone</h4>`
-        }
-
-        // hash the otp
-        const hashedOTP = await bcrypt.hash(otp, saltRounds)
-        // creating new instance of verification otp
-        const newUserVerificationOtp = new UserVerificationOtp({
-            userId: _id,
-            otp: hashedOTP,
-            createdAt: Date.now(),
-            expiresAt: Date.now() + 1800000
-        })
-        // save otp verification record
-        await newUserVerificationOtp.save()
-        // send mail to the user
-        transporter.sendMail(mailOptions)
-        res.json({
-            status: "Pending",
-            message: "Verification Otp sent",
-            userId: _id
-        })
-    } catch (error) {
-        console.log(error)
-        res.json({
-            status: "Failed",
-            message: error.message,
-        })
-    }
-}
 
 // Endpoint 2:Send Otp and reset your password
 router.post("/otp/:userId", [
@@ -142,7 +102,7 @@ router.post("/otp/:userId", [
                             // delete OTP record
                             await UserVerificationOtp.deleteMany({ userId: req.params.userId })
                             // encrypt the new password
-                            let encryptedPassword = await bcrypt.hash(password, saltRounds)
+                            let encryptedPassword = await hashData(password)
                             // reset and update the user password
                             await User.findByIdAndUpdate(req.params.userId, { password: encryptedPassword }, { new: true })
 

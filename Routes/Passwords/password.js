@@ -81,17 +81,23 @@ router.get('/read/:userId', async (req, res) => {
 // Endpoint 3: Update a particular password vault
 router.post('/update/:id', async (req, res) => {
     try {
+        // destructuring
         let { title, password } = req.body
         let { id } = req.params
+        // updatedvault -- empty object
         let updatedVault = {}
+        // if title is updated
         if (title) {
             updatedVault.title = title
         }
+        // if password is updated
         if (password) {
             updatedVault.password = password
         }
+        // find user saved password by id
         let passVault = await Password.findById(id)
         if (passVault) {
+            // find by id and update
             let updatedPassVault = await Password.findByIdAndUpdate(id, { $set: updatedVault, __enc_message: false }, { new: true })
             if (updatedPassVault) {
                 res.json({
@@ -120,7 +126,9 @@ router.post('/update/:id', async (req, res) => {
 // Endpoint 4: Delete a particular saved password
 router.delete('/delete/:id', async (req, res) => {
     try {
+        // destructuring
         let { id } = req.params
+        // find saved password by id and delete it
         let passVault = await Password.findByIdAndDelete(id)
         if (passVault) {
             res.json({

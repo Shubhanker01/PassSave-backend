@@ -6,8 +6,8 @@ const router = express.Router()
 const { body, validationResult } = require('express-validator')
 // user Model
 const User = require('../../Models/User')
-// generate salt
-const saltRounds = 10
+// import hashData func
+const hashData = require('../../Utils/hashData')
 
 // Endpoint 5: Update the user password by searching the user through email
 router.post('/userpassword/:id', [
@@ -33,7 +33,7 @@ router.post('/userpassword/:id', [
                 const compare = await bcrypt.compare(oldPassword, user.password)
                 if (compare) {
                     // hash the new password
-                    let hashedNewPassword = await bcrypt.hash(newPassword, saltRounds)
+                    let hashedNewPassword = await hashData(newPassword)
                     // update the user password in the database
                     let userUpdate = await User.findByIdAndUpdate(id, { password: hashedNewPassword }, { new: true })
                     // if password is successfully updated
@@ -44,31 +44,19 @@ router.post('/userpassword/:id', [
                         })
                     }
                     else {
-                        res.json({
-                            status: "Error",
-                            message: "Some error occured"
-                        })
+                        throw Error("Some error occured.")
                     }
                 }
                 else {
-                    res.json({
-                        status: "Error",
-                        message: "Password entered is incorrect"
-                    })
+                    throw Error("Password entered is incorrect.")
                 }
             }
             else {
-                res.json({
-                    status: "Error",
-                    message: "Id not found"
-                })
+                throw Error("User not found")
             }
         }
         else {
-            res.json({
-                status: "Error",
-                message: "Your password written is incorrect"
-            })
+            throw Error("Check your password written again")
         }
     }
     catch (error) {
@@ -97,17 +85,11 @@ router.post('/name/:id', [
                 })
             }
             else {
-                res.json({
-                    status: "Error",
-                    message: "Some error occured"
-                })
+                throw Error("Some error occured")
             }
         }
         else {
-            res.json({
-                status: "Error",
-                message: "Please enter your name or invalid id is sent"
-            })
+            throw Error("Please enter your name or invalid ID is sent")
         }
     } catch (error) {
         console.log(error)
