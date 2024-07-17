@@ -44,19 +44,31 @@ router.post('/userpassword/:id', [
                         })
                     }
                     else {
-                        throw Error("Some error occured.")
+                        res.json({
+                            status: "Error",
+                            message: "Some Error occured"
+                        })
                     }
                 }
                 else {
-                    throw Error("Password entered is incorrect.")
+                    res.json({
+                        status: "Error",
+                        message: "Password entered is incorrect"
+                    })
                 }
             }
             else {
-                throw Error("User not found")
+                res.json({
+                    status: "Error",
+                    message: "User not found"
+                })
             }
         }
         else {
-            throw Error("Check your password written again")
+            res.json({
+                status: "Error",
+                message: "Check your password written again"
+            })
         }
     }
     catch (error) {

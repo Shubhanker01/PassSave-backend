@@ -23,9 +23,10 @@ router.post('/add/:userId', async (req, res) => {
                 securityCode: securityCode
             })
             if (paymentCardDetails) {
+                const details = await Paymentcard.findById(paymentCardDetails._id)
                 res.json({
                     status: "Success",
-                    data: paymentCardDetails
+                    data: details
                 })
             }
             else {
@@ -114,7 +115,7 @@ router.get('/fetch/:userId', async (req, res) => {
         if (userId.match(/^[0-9a-fA-F]{24}$/)) {
             // find card details by user id
             let cardDetails = await Paymentcard.find({ userId: userId })
-            if (cardDetails.length > 0) {
+            if (cardDetails) {
                 res.json({
                     status: "Success",
                     data: cardDetails
@@ -122,8 +123,8 @@ router.get('/fetch/:userId', async (req, res) => {
             }
             else {
                 res.json({
-                    status: "Success",
-                    data: cardDetails
+                    status: "Error",
+                    message: "Invalid Details"
                 })
             }
         }

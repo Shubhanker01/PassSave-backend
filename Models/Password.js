@@ -11,9 +11,14 @@ const Password = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'users'
     },
+    
     title: {
         type: String
     },
+    email:{
+        type:String
+    }
+    ,
     password: {
         type: String
     },

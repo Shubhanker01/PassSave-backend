@@ -23,9 +23,10 @@ router.post('/add/:userId', async (req, res) => {
                 cifNo: cifNo
             })
             if (userBankCredentials) {
+                let data = await Bankaccount.findById(userBankCredentials._id)
                 res.json({
                     status: "Success",
-                    data: userBankCredentials
+                    data: data
                 })
             }
             else {
@@ -125,7 +126,7 @@ router.get('/fetch/:userId', async (req, res) => {
             else {
                 res.json({
                     status: "Success",
-                    message: "No bank details created to show."
+                    data: userBankDetails
                 })
             }
         }

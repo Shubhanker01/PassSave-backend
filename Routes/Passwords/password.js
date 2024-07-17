@@ -10,6 +10,7 @@ const Password = require('../../Models/Password')
 // Endpoint 1: Create and add a new password
 router.post('/add/:userId', [
     body('title', "Please enter the title").isLength({ min: 1 }),
+    body('email', "Please enter the Email ").isLength({min:1}),
     body('password', "Please enter the password field").isLength({ min: 1 })
 ], async (req, res) => {
     const errors = validationResult(req);
@@ -18,21 +19,22 @@ router.post('/add/:userId', [
     }
     try {
         // destructuring
-        let { title, password } = req.body
+        let { title, email, password } = req.body
         let { userId } = req.params
         // if title and password are true
         if (title && password) {
-           // create a new password vault
+            // create a new password vault
             let vault = await Password.create({
                 userId: userId,
                 title: title,
                 password: password,
                 createdAt: Date.now()
             })
-            if (vault) {
+            let doc = await Password.findById(vault._id)
+            if (doc) {
                 res.json({
                     status: "Success",
-                    data: vault
+                    data: doc
                 })
             }
             else {
@@ -69,8 +71,7 @@ router.get('/read/:userId', async (req, res) => {
         }
         else {
             res.json({
-                status: "Error",
-                message: "No password are there to show"
+                data: savedPass
             })
         }
     } catch (error) {
@@ -99,6 +100,7 @@ router.post('/update/:id', async (req, res) => {
         if (passVault) {
             // find by id and update
             let updatedPassVault = await Password.findByIdAndUpdate(id, { $set: updatedVault, __enc_message: false }, { new: true })
+
             if (updatedPassVault) {
                 res.json({
                     status: "Success",

@@ -67,7 +67,6 @@ router.get('/fetchnotes/:userId', async (req, res) => {
                 status: "Success",
                 notes: notes
             })
-            console.log(notes.length)
         }
         else {
             res.json({

@@ -1,6 +1,8 @@
 // importing express
 const express = require('express')
 const router = express.Router()
+const path = require('path')
+const fs = require('fs')
 
 // importing multer
 const multer = require('multer')
@@ -10,6 +12,13 @@ const Attachments = require('../../Models/Attachments')
 // importing unlink
 const { unlink } = require('fs/promises');
 
+const multerFilter = (req, file, cb) => {
+    if (file.mimetype.split("/")[1] === "pdf") {
+        cb(null, true);
+    } else {
+        cb(new Error("Not a PDF File!!"), false);
+    }
+};
 // store file in server
 var storage = multer.diskStorage({
     // path where the file is to be stored
@@ -23,20 +32,20 @@ var storage = multer.diskStorage({
 });
 
 // upload the file in the storage
-var upload = multer({ storage: storage });
+var upload = multer({ storage: storage, fileFilter: multerFilter });
 
 // Endpoint 1: Uploading the file with title
 router.post('/upload/:userId', upload.single("file"), async (req, res) => {
     try {
         // destructure
-        let { title } = req.body
         let { userId } = req.params
         // if file is present
         if (req.file) {
+            console.log(req.file)
             // create attachment
             let attachments = await Attachments.create({
                 userId: userId,
-                title: title,
+                title: req.file.originalname,
                 file: req.file.path
             })
             if (attachments) {
@@ -75,7 +84,7 @@ router.get('/display/:userId', async (req, res) => {
             // find user attachment by id
             let attachments = await Attachments.find({ userId: userId })
             // if attachment is present
-            if (attachments.length > 0) {
+            if (attachments) {
                 res.json({
                     status: "Success",
                     attachments: attachments
@@ -84,9 +93,10 @@ router.get('/display/:userId', async (req, res) => {
             else {
                 res.json({
                     status: "Error",
-                    message: "No attachments to show."
+                    message: "Some error occured"
                 })
             }
+
         }
         else {
             res.json({
@@ -107,15 +117,19 @@ router.get('/download/:id', async (req, res) => {
         if (id.match(/^[0-9a-fA-F]{24}$/)) {
             // find user attachment by id
             let attachment = await Attachments.findById(id)
-            // if attachment is present
             if (attachment) {
-                // download the attachment
-                res.download(attachment.file)
+                let file = fs.createReadStream(attachment.file)
+                res.writeHead(200, { 'Content-disposition': `attachment;filename:${attachment.title}` })
+                file.pipe(res)
             }
+
+            // if (attachment) {
+            //     res.json({ attachment: attachment })
+            // }
             else {
                 res.json({
                     status: "Error",
-                    message: "Invalid Id"
+                    message: "Attachment not found"
                 })
             }
         }

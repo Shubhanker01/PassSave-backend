@@ -27,10 +27,10 @@ router.post('/login', [
             if (passwordCompare) {
                 return res.json({ status: "success", user })
             }
-            throw Error("Login credentials are incorrect")
+            return res.json({ status: "Error", message: "Login credentials are incorrect" })
         }
         else {
-            throw Error("Login credentials are incorrect")
+            return res.json({ status: "Error", message: "Login credentials are incorrect" })
         }
     } catch (error) {
         console.log(error)

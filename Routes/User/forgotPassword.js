@@ -78,7 +78,10 @@ router.post("/otp/:userId", [
             const userOtpVerificationRecords = await UserVerificationOtp.find({ userId: req.params.userId })
             if (userOtpVerificationRecords.length <= 0) {
                 //   no record found
-                throw new Error("Record doesn't exists or has been verified already")
+                res.json({
+                    status: "Error",
+                    message: "No record has been found"
+                })
             }
             else {
                 // user otp records exists
@@ -87,13 +90,19 @@ router.post("/otp/:userId", [
                 if (expiresAt < Date.now()) {
                     // user otp record has expired
                     await UserVerificationOtp.deleteMany({ userId: req.params.userId })
-                    throw new Error("Code has expired please request again")
+                    res.json({
+                        status: "Error",
+                        message: "Code has been expired!! Please request again"
+                    })
                 }
                 else {
                     const validOtp = await bcrypt.compare(otp, hashedOTP)
                     if (!validOtp) {
                         // otp is wrong
-                        throw new Error("Invalid OTP written Please check your inbox")
+                        res.json({
+                            status: "Error",
+                            message: "Invalid OTP written. Please check your inbox!!1"
+                        })
                     }
                     else {
                         // success

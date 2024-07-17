@@ -25,7 +25,7 @@ router.post('/signup', [
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.json({ status: "Error", message: "Your credentials are incomplete or wrong!!!" });
     }
     try {
         let encryptedPassword = await hashData(req.body.password)
@@ -62,6 +62,7 @@ router.post('/signup', [
                 throw Error("Some error occured")
             }
         }
+
     } catch (error) {
         console.log(error)
     }
@@ -74,13 +75,20 @@ router.post("/verifyotp/:userId", async (req, res) => {
         let { otp } = req.body
 
         if (!otp) {
-            throw Error("Empty details are not allowed")
+            res.json({
+                status: "Error",
+                message: "Empty record is not allowed."
+            })
         }
         else {
             const userOtpVerificationRecords = await UserVerificationOtp.find({ userId: req.params.userId })
             if (userOtpVerificationRecords.length <= 0) {
                 //   no record found
-                throw new Error("Record doesn't exists or has been verified already")
+                res.json({
+                    status: "Error",
+                    message: "Record doesn't exists or has been verified already."
+                })
+                console.log(userOtpVerificationRecords)
             }
             else {
                 // user otp records exists
@@ -89,13 +97,20 @@ router.post("/verifyotp/:userId", async (req, res) => {
                 if (expiresAt < Date.now()) {
                     // user otp record has expired
                     await UserVerificationOtp.deleteMany({ userId: req.params.userId })
-                    throw new Error("Code has expired please request again")
+                    await User.findByIdAndDelete(req.params.userId)
+                    res.json({
+                        status: "Error",
+                        message: "Code has expired please request again."
+                    })
                 }
                 else {
                     const validOtp = await bcrypt.compare(otp, hashedOTP)
                     if (!validOtp) {
                         // otp is wrong
-                        throw new Error("Invalid code written Please check your inbox")
+                        res.json({
+                            status: "Error",
+                            message: "Invalid code written please check your inbox."
+                        })
                     }
                     else {
                         // success
@@ -110,6 +125,7 @@ router.post("/verifyotp/:userId", async (req, res) => {
                     }
                 }
             }
+           
         }
     } catch (error) {
         console.log(error)

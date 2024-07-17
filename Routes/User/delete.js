@@ -4,6 +4,52 @@ const router = express.Router()
 
 // user Model
 const User = require('../../Models/User')
+const Password = require('../../Models/Password')
+const bankAccounts = require('../../Models/Bankaccount')
+const paymentCard = require('../../Models/Paymentcard')
+
+const removeUserPasswords = async (id) => {
+    try {
+        const userPasswords = await Password.exists({ userId: id })
+        if (userPasswords) {
+            await Password.deleteMany({ userId: id })
+        }
+        else {
+            throw Error("No Passwords found")
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const removeBankDetails = async (id) => {
+    try {
+        const bankDetails = await bankAccounts.exists({ userId: id })
+        if (bankDetails) {
+            await bankAccounts.deleteMany({ userId: id })
+        }
+        else {
+            throw Error("no document found to delete")
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const removeCardDetails = async (id) => {
+    try {
+        const cardDetails = await paymentCard.exists({ userId: id })
+        if (cardDetails) {
+            await cardDetails.deleteMany({ userId: id })
+        }
+        else {
+            throw Error("no notes found to delete")
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 // Endpoint 3: Deleting the user account
 router.delete("/deleteaccount", async (req, res) => {
@@ -14,17 +60,26 @@ router.delete("/deleteaccount", async (req, res) => {
         if (userId.match(/^[0-9a-fA-F]{24}$/)) {
             let user = await User.findByIdAndDelete({ _id: userId })
             if (user) {
+                removeUserPasswords(userId)
+                removeCardDetails(userId)
+                removeBankDetails(userId)
                 res.json({
                     status: "Success",
                     message: "Your account is deleted"
                 })
             }
             else {
-                throw Error("Did not found your Id")
+                res.json({
+                    status: "Success",
+                    message: "Invalid ID"
+                })
             }
         }
         else {
-            throw Error("Some error occured")
+            res.json({
+                status: "Success",
+                message: "Some error occured"
+            })
         }
     } catch (error) {
         console.log(error)
