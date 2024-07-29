@@ -1,7 +1,7 @@
 // code to connect to mongodb database
 const moongose = require('mongoose')
 
-const mongoURI = "mongodb://localhost:27017/passwordManager"
+const mongoURI = "mongodb+srv://shubhanker40:bca02092001@cluster1.ivvgywy.mongodb.net/PassSave"
 
 // connect to mongoDB
 const connectToMongo = () => {
