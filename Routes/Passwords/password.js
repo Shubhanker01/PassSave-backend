@@ -10,7 +10,6 @@ const Password = require('../../Models/Password')
 // Endpoint 1: Create and add a new password
 router.post('/add/:userId', [
     body('title', "Please enter the title").isLength({ min: 1 }),
-    body('email', "Please enter the Email ").isLength({min:1}),
     body('password', "Please enter the password field").isLength({ min: 1 })
 ], async (req, res) => {
     const errors = validationResult(req);
@@ -19,7 +18,7 @@ router.post('/add/:userId', [
     }
     try {
         // destructuring
-        let { title, email, password } = req.body
+        let { title, password } = req.body
         let { userId } = req.params
         // if title and password are true
         if (title && password) {

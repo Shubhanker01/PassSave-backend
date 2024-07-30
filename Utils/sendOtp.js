@@ -12,6 +12,9 @@ const message = require('./sendMsg')
 
 // nodemailer stuff
 let transporter = nodemailer.createTransport({
+    host:'smtp.ethereal.email',
+    port:587,
+    secure:false,
     service: 'gmail',
     auth: {
         user: process.env.AUTH_EMAIL,

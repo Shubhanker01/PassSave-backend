@@ -15,10 +15,6 @@ const Password = new Schema({
     title: {
         type: String
     },
-    email:{
-        type:String
-    }
-    ,
     password: {
         type: String
     },
