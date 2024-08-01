@@ -7,7 +7,7 @@ const connectToMongo = require('./db')
 
 const port = 4001
 
-connectToMongo()
+connectToMongo().then(res => console.log(res)).catch(err => console.log(err))
 // this code needs to be used before specifying route path
 app.use(express.json())
 app.use(cors())
