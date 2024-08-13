@@ -1,11 +1,11 @@
 // code to connect to mongodb database
+require('dotenv').config()
 const moongose = require('mongoose')
 
-const mongoURI = "mongodb+srv://shubhanker40:bca02092001@cluster1.ivvgywy.mongodb.net/PassSave"
 
 // connect to mongoDB
 const connectToMongo = async () => {
-    await moongose.connect(mongoURI, () => {
+    await moongose.connect(process.env.MONGO_URI, () => {
         console.log('successfully connected to moongose')
     })
 }
