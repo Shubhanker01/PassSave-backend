@@ -6,6 +6,8 @@ const router = express.Router()
 const { body, validationResult } = require('express-validator')
 // user Model
 const User = require('../../Models/User')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
 // Endpoint 2: When the user log in 
 router.post('/login', [
@@ -25,7 +27,11 @@ router.post('/login', [
         if (user && user.verified === true) {
             let passwordCompare = await bcrypt.compare(password, user.password)
             if (passwordCompare) {
-                return res.json({ status: "success", user })
+                let jwtuser = { id: user._id, name: user.name, email: user.email }
+                jwt.sign(jwtuser, process.env.JWT_SECRET, function (token) {
+                    return res.json({ status: "success", token })
+                })
+
             }
             return res.json({ status: "Error", message: "Login credentials are incorrect" })
         }
