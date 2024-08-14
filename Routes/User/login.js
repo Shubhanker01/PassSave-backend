@@ -27,10 +27,14 @@ router.post('/login', [
         if (user && user.verified === true) {
             let passwordCompare = await bcrypt.compare(password, user.password)
             if (passwordCompare) {
-                let jwtuser = { id: user._id, name: user.name, email: user.email }
-                jwt.sign(jwtuser, process.env.JWT_SECRET, function (token) {
-                    return res.json({ status: "success", token })
-                })
+                let jwtuser = {
+                    "id": user._id.toString(),
+                    "name": user.name,
+                    "email": user.email
+                }
+                let token = jwt.sign(jwtuser, process.env.JWT_SECRET)
+                return res.json({ status: "success", user, token })
+
 
             }
             return res.json({ status: "Error", message: "Login credentials are incorrect" })

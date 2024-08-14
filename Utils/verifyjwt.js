@@ -1,16 +1,17 @@
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
-function verifyjwt(token){
+function authenticateToken(req,res,next){
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
     jwt.verify(token,process.env.JWT_SECRET,function(err,decoded){
         if(err){
-            return "error"
+            res.send({status:"error",message:"Invalid Authorization"})
+            return
         }
-        else{
-            return "verified"
-        }
+        return decoded
     })
-
+    next()
 }
 
-module.exports = verifyjwt
+module.exports = authenticateToken

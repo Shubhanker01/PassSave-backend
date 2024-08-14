@@ -1,10 +1,9 @@
 // importing express
 const express = require('express')
 const app = express()
-var cors = require('cors')
+const cors = require('cors')
 // importing connectToMongo
 const connectToMongo = require('./db')
-
 const port = 4001
 
 connectToMongo().then(res => console.log(res)).catch(err => console.log(err))
@@ -15,6 +14,7 @@ app.use(cors())
 app.get('/', (req, res) => {
     res.send('Hello World!')
 })
+
 
 
 // route for authentication

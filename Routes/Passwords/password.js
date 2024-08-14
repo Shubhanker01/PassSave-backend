@@ -3,7 +3,7 @@ const express = require('express')
 const router = express.Router()
 // validator
 const { body, validationResult } = require('express-validator')
-
+const authenticateToken = require('../../Utils/verifyjwt')
 // importing Password model
 const Password = require('../../Models/Password')
 
@@ -11,7 +11,7 @@ const Password = require('../../Models/Password')
 router.post('/add/:userId', [
     body('title', "Please enter the title").isLength({ min: 1 }),
     body('password', "Please enter the password field").isLength({ min: 1 })
-], async (req, res) => {
+], authenticateToken, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
