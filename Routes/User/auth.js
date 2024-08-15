@@ -10,7 +10,7 @@ const User = require('../../Models/User')
 const UserVerificationOtp = require('../../Models/UserVerificationOtp')
 // import sendOtp func
 const sendOtp = require('../../Utils/sendOtp')
-
+const jwt = require('jsonwebtoken')
 // import hashData func
 const hashData = require('../../Utils/hashData')
 // env variables
@@ -116,16 +116,20 @@ router.post("/verifyotp/:userId", async (req, res) => {
                         // success
                         // update the verification to true
                         await User.updateOne({ _id: req.params.userId }, { verified: true })
+                        let document = User.findById(req.params.userId)
+                        let jwtuser = { "id": document._id, "name": document.name, "email": document.email }
                         // delete the verifiedOtp no longer required
                         await UserVerificationOtp.deleteMany({ userId: req.params.userId })
+                        let token = jwt.sign(jwtuser, process.env.JWT_SECRET)
                         res.json({
                             status: "Verified",
-                            message: "User email verified successfully"
+                            message: "User email verified successfully",
+                            token: token
                         })
                     }
                 }
             }
-           
+
         }
     } catch (error) {
         console.log(error)

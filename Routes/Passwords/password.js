@@ -55,7 +55,7 @@ router.post('/add/:userId', [
 })
 
 // Endpoint 2: Read the password vault of a particular user
-router.get('/read/:userId', async (req, res) => {
+router.get('/read/:userId', authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { userId } = req.params
@@ -79,7 +79,7 @@ router.get('/read/:userId', async (req, res) => {
 })
 
 // Endpoint 3: Update a particular password vault
-router.post('/update/:id', async (req, res) => {
+router.post('/update/:id', authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { title, password } = req.body
@@ -125,7 +125,7 @@ router.post('/update/:id', async (req, res) => {
 })
 
 // Endpoint 4: Delete a particular saved password
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id', authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { id } = req.params
