@@ -8,6 +8,7 @@ const { body, validationResult } = require('express-validator')
 const User = require('../../Models/User')
 // import hashData func
 const hashData = require('../../Utils/hashData')
+const authenticateToken = require('../../Utils/verifyjwt')
 
 // Endpoint 5: Update the user password by searching the user through email
 router.post('/userpassword/:id', [
@@ -79,7 +80,7 @@ router.post('/userpassword/:id', [
 // Endpoint 6 : Update the username 
 router.post('/name/:id', [
     body('name', 'Please enter your name').isLength({ min: 3 })
-], async (req, res) => {
+], authenticateToken, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });

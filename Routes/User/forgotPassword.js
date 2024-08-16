@@ -13,6 +13,8 @@ const sendOtp = require('../../Utils/sendOtp')
 
 // import hashData func
 const hashData = require('../../Utils/hashData')
+const jwt = require('jsonwebtoken')
+const authenticateToken = require('../../Utils/verifyjwt')
 
 // Endpoint 1: Sending the email and verify the otp
 router.post('/verify', [
@@ -27,6 +29,7 @@ router.post('/verify', [
         let { email } = req.body
         if (email) {
             let user = await User.findOne({ email: email })
+            let jwtuser = { "name": user.name, "email": user.email }
             if (user) {
                 let msg = `<h1>Password Reset</h1>
                 <h2>Your OTP is given below. Enter this OTP in the app to verify your email address and reset your password.</h2>
@@ -34,10 +37,12 @@ router.post('/verify', [
                 `
                 // send password reset otp
                 await sendOtp(user, msg)
+                let resetToken = jwt.sign(jwtuser, process.env.JWT_SECRET)
                 res.json({
                     status: "Pending",
                     message: "Verification email sent",
-                    userId: user._id
+                    userId: user._id,
+                    token: resetToken
                 })
             }
             else {
@@ -62,7 +67,7 @@ router.post('/verify', [
 router.post("/otp/:userId", [
     body('password', 'Password minimum length should be 5').isLength({ min: 5 }),
     body('confirmPassword', 'Password minimum length should be 5').isLength({ min: 5 })
-], async (req, res) => {
+], authenticateToken, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });

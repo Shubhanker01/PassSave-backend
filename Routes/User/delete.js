@@ -7,6 +7,7 @@ const User = require('../../Models/User')
 const Password = require('../../Models/Password')
 const bankAccounts = require('../../Models/Bankaccount')
 const paymentCard = require('../../Models/Paymentcard')
+const authenticateToken = require('../../Utils/verifyjwt')
 
 const removeUserPasswords = async (id) => {
     try {
@@ -52,7 +53,7 @@ const removeCardDetails = async (id) => {
 }
 
 // Endpoint 3: Deleting the user account
-router.delete("/deleteaccount", async (req, res) => {
+router.delete("/deleteaccount", authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { userId } = req.body
