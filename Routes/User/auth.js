@@ -116,7 +116,7 @@ router.post("/verifyotp/:userId", async (req, res) => {
                         // success
                         // update the verification to true
                         await User.updateOne({ _id: req.params.userId }, { verified: true })
-                        let document = User.findById(req.params.userId)
+                        let document = await User.findOne({_id:req.params.userId})
                         let jwtuser = { "id": document._id, "name": document.name, "email": document.email }
                         // delete the verifiedOtp no longer required
                         await UserVerificationOtp.deleteMany({ userId: req.params.userId })

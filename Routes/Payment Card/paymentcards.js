@@ -4,9 +4,10 @@ const router = express.Router()
 
 // importing Payment card model
 const Paymentcard = require('../../Models/Paymentcard')
+const authenticateToken = require('../../Utils/verifyjwt')
 
 // Endpoint 1: Adding a payment card detail
-router.post('/add/:userId', async (req, res) => {
+router.post('/add/:userId',authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { title, cardName, cardType, number, securityCode } = req.body
@@ -49,7 +50,7 @@ router.post('/add/:userId', async (req, res) => {
 
 
 // Endpoint 2: Updating a payment card detail
-router.post('/update/:id', async (req, res) => {
+router.post('/update/:id',authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { title, cardName, cardType, number, securityCode } = req.body
@@ -107,7 +108,7 @@ router.post('/update/:id', async (req, res) => {
 })
 
 // Endpoint 3: Getting a user payment card details
-router.get('/fetch/:userId', async (req, res) => {
+router.get('/fetch/:userId',authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { userId } = req.params
@@ -140,7 +141,7 @@ router.get('/fetch/:userId', async (req, res) => {
 })
 
 // Endpoint 4:Deleting a user payment card detail
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id',authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { id } = req.params
