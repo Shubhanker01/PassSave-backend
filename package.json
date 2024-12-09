@@ -16,6 +16,7 @@
     "express": "^4.18.1",
     "express-validator": "^6.14.0",
     "jsonwebtoken": "^9.0.2",
+    "minimist": "^1.2.8",
     "mongodb": "^4.4.0",
     "mongoose": "^8.8.4",
     "mongoose-field-encryption": "^5.0.2",
