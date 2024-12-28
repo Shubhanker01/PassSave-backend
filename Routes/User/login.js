@@ -22,7 +22,7 @@ router.post('/login', [
         // destructuring email and password from req.body
         let { email, password } = req.body
         // find email of user
-        let user = await User.findOne({ email: email })
+        let user = await User.findOne({ email: { $eq: email } })
         // if user is found and verfication is true
         if (user && user.verified === true) {
             let passwordCompare = await bcrypt.compare(password, user.password)
