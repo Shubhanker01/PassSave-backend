@@ -5,13 +5,13 @@ const cors = require('cors')
 // importing connectToMongo
 const connectToMongo = require('./db')
 const port = 4001
-const limiter = require('../Backend/Middleware/ratelimit')
+
 
 connectToMongo().then(res => console.log(res)).catch(err => console.log(err))
 // this code needs to be used before specifying route path
 app.use(express.json())
 app.use(cors())
-app.use(limiter)
+
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
