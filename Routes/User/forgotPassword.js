@@ -15,11 +15,12 @@ const sendOtp = require('../../Utils/sendOtp')
 const hashData = require('../../Utils/hashData')
 const jwt = require('jsonwebtoken')
 const authenticateToken = require('../../Utils/verifyjwt')
+const limiter = require('../../Middleware/ratelimit')
 
 // Endpoint 1: Sending the email and verify the otp
 router.post('/verify', [
     body("email", "Please enter a valid email").isEmail()
-], async (req, res) => {
+],limiter, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -67,7 +68,7 @@ router.post('/verify', [
 router.post("/otp/:userId", [
     body('password', 'Password minimum length should be 5').isLength({ min: 5 }),
     body('confirmPassword', 'Password minimum length should be 5').isLength({ min: 5 })
-], authenticateToken, async (req, res) => {
+],limiter, authenticateToken, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
