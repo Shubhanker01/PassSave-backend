@@ -11,6 +11,7 @@ const multer = require('multer')
 const Attachments = require('../../Models/Attachments')
 // importing unlink
 const { unlink } = require('fs/promises');
+const limiter = require('../../Middleware/ratelimit')
 
 const multerFilter = (req, file, cb) => {
     if (file.mimetype.split("/")[1] === "pdf") {
@@ -35,7 +36,7 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage, fileFilter: multerFilter });
 
 // Endpoint 1: Uploading the file with title
-router.post('/upload/:userId', upload.single("file"), async (req, res) => {
+router.post('/upload/:userId', limiter, upload.single("file"), async (req, res) => {
     try {
         // destructure
         let { userId } = req.params
@@ -75,7 +76,7 @@ router.post('/upload/:userId', upload.single("file"), async (req, res) => {
 });
 
 // Endpoint 2: Display attachments of user
-router.get('/display/:userId', async (req, res) => {
+router.get('/display/:userId', limiter, async (req, res) => {
     try {
         // destructuring
         let { userId } = req.params
@@ -110,7 +111,7 @@ router.get('/display/:userId', async (req, res) => {
 })
 
 // Endpoint 3: Download attachment of user
-router.get('/download/:id', async (req, res) => {
+router.get('/download/:id', limiter, async (req, res) => {
     try {
         // destructuring
         let { id } = req.params
@@ -139,7 +140,7 @@ router.get('/download/:id', async (req, res) => {
 })
 
 // Endpoint 4: delete the attachment
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id', limiter, async (req, res) => {
     try {
         // destructuring
         let { id } = req.params
