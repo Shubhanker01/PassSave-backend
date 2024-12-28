@@ -15,10 +15,10 @@ const jwt = require('jsonwebtoken')
 const hashData = require('../../Utils/hashData')
 // env variables
 require('dotenv').config()
-
+const limiter = require('../../Middleware/ratelimit')
 // Endpoint 1: Add a new user when the user sign up
 
-router.post('/signup', [
+router.post('/signup', limiter, [
     body('name', 'Please enter your name').isLength({ min: 3 }),
     body('email', 'Please enter a valid email').isEmail(),
     body('password', 'Please enter a valid password').isLength({ min: 5 })
@@ -69,7 +69,7 @@ router.post('/signup', [
 })
 
 // verify otp email
-router.post("/verifyotp/:userId", async (req, res) => {
+router.post("/verifyotp/:userId", limiter, async (req, res) => {
     try {
         // destructuring
         let { otp } = req.body
