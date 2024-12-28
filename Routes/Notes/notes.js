@@ -6,13 +6,14 @@ const { body, validationResult } = require('express-validator')
 
 // importing Notes model
 const Notes = require('../../Models/Notes')
+const limiter = require('../../Middleware/ratelimit')
 
 // Endpoint for notes
 // Endpoint 1: Creating a note by a particular user
 router.post('/create/:userId', [
     body('title', 'Add a title').isLength({ min: 1 }),
     body('description', 'Add a description').isLength({ min: 1 })
-], async (req, res) => {
+],limiter, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -56,7 +57,7 @@ router.post('/create/:userId', [
 
 
 // Endpoint 2: Fetch notes of a particular user
-router.get('/fetchnotes/:userId', async (req, res) => {
+router.get('/fetchnotes/:userId',limiter, async (req, res) => {
     try {
         // destructuring
         let { userId } = req.params
@@ -80,7 +81,7 @@ router.get('/fetchnotes/:userId', async (req, res) => {
 })
 
 // Endpoint 3: Deleting a particular note
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id',limiter, async (req, res) => {
     try {
         //    destructuring
         let { id } = req.params
@@ -114,7 +115,7 @@ router.delete('/delete/:id', async (req, res) => {
 })
 
 // Endpoint 4: Updating a particular note
-router.post('/update/:id', async (req, res) => {
+router.post('/update/:id',limiter, async (req, res) => {
     try {
         // destructuring
         const { title, description } = req.body
