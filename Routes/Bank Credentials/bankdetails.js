@@ -5,9 +5,10 @@ const router = express.Router()
 // importing bankAccounts model
 const Bankaccount = require('../../Models/Bankaccount')
 const authenticateToken = require('../../Utils/verifyjwt')
+const limiter = require('../../Middleware/ratelimit')
 
 // Endpoint 1: Adding a bank credential by user
-router.post('/add/:userId',authenticateToken, async (req, res) => {
+router.post('/add/:userId',limiter,authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { title, bankName, accountNo, accountType, pin, cifNo } = req.body
@@ -49,7 +50,7 @@ router.post('/add/:userId',authenticateToken, async (req, res) => {
 })
 
 // Endpoint 2: Updating bank credential by the user
-router.post('/update/:id',authenticateToken, async (req, res) => {
+router.post('/update/:id',limiter,authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { title, bankName, accountNo, accountType, pin, cifNo } = req.body
@@ -109,7 +110,7 @@ router.post('/update/:id',authenticateToken, async (req, res) => {
 })
 
 // Endpoint 3: Fetching the user bank account details
-router.get('/fetch/:userId',authenticateToken, async (req, res) => {
+router.get('/fetch/:userId',limiter,authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { userId } = req.params
@@ -143,7 +144,7 @@ router.get('/fetch/:userId',authenticateToken, async (req, res) => {
 })
 
 // Endpoint 4: Deleting a user bank account detail
-router.delete('/delete/:id',authenticateToken, async (req, res) => {
+router.delete('/delete/:id',limiter,authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { id } = req.params
