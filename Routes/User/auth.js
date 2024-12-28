@@ -30,7 +30,7 @@ router.post('/signup', [
     try {
         let encryptedPassword = await hashData(req.body.password)
         // check if the email already exists
-        let user = await User.findOne({ email: req.body.email })
+        let user = await User.findOne({ email: { $eq: req.body.email } })
         // if email exists give error
         if (user) {
             res.json({
@@ -116,7 +116,7 @@ router.post("/verifyotp/:userId", async (req, res) => {
                         // success
                         // update the verification to true
                         await User.updateOne({ _id: req.params.userId }, { verified: true })
-                        let document = await User.findOne({_id:req.params.userId})
+                        let document = await User.findOne({ _id: req.params.userId })
                         let jwtuser = { "id": document._id, "name": document.name, "email": document.email }
                         // delete the verifiedOtp no longer required
                         await UserVerificationOtp.deleteMany({ userId: req.params.userId })
