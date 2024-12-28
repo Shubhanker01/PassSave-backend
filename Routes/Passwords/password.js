@@ -6,12 +6,13 @@ const { body, validationResult } = require('express-validator')
 const authenticateToken = require('../../Utils/verifyjwt')
 // importing Password model
 const Password = require('../../Models/Password')
+const limiter = require('../../Middleware/ratelimit')
 
 // Endpoint 1: Create and add a new password
 router.post('/add/:userId', [
     body('title', "Please enter the title").isLength({ min: 1 }),
     body('password', "Please enter the password field").isLength({ min: 1 })
-], authenticateToken, async (req, res) => {
+], limiter, authenticateToken, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -55,7 +56,7 @@ router.post('/add/:userId', [
 })
 
 // Endpoint 2: Read the password vault of a particular user
-router.get('/read/:userId', authenticateToken, async (req, res) => {
+router.get('/read/:userId',limiter, authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { userId } = req.params
@@ -79,7 +80,7 @@ router.get('/read/:userId', authenticateToken, async (req, res) => {
 })
 
 // Endpoint 3: Update a particular password vault
-router.post('/update/:id', authenticateToken, async (req, res) => {
+router.post('/update/:id',limiter, authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { title, password } = req.body
@@ -125,7 +126,7 @@ router.post('/update/:id', authenticateToken, async (req, res) => {
 })
 
 // Endpoint 4: Delete a particular saved password
-router.delete('/delete/:id', authenticateToken, async (req, res) => {
+router.delete('/delete/:id',limiter, authenticateToken, async (req, res) => {
     try {
         // destructuring
         let { id } = req.params
