@@ -28,7 +28,7 @@ router.post('/verify', [
         // destructuring
         let { email } = req.body
         if (email) {
-            let user = await User.findOne({ email: email })
+            let user = await User.findOne({ email: { $eq: email } })
             let jwtuser = { "name": user.name, "email": user.email }
             if (user) {
                 let msg = `<h1>Password Reset</h1>
