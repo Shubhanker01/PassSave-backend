@@ -13,7 +13,7 @@ const removeUserPasswords = async (id) => {
     try {
         const userPasswords = await Password.exists({ userId: { $eq: id } })
         if (userPasswords) {
-            await Password.deleteMany({ userId: id })
+            await Password.deleteMany({ userId: { $eq: id } })
         }
         else {
             throw Error("No Passwords found")
@@ -28,7 +28,7 @@ const removeBankDetails = async (id) => {
     try {
         const bankDetails = await bankAccounts.exists({ userId: { $eq: id } })
         if (bankDetails) {
-            await bankAccounts.deleteMany({ userId: id })
+            await bankAccounts.deleteMany({ userId: { $eq: id } })
         }
         else {
             throw Error("no document found to delete")
