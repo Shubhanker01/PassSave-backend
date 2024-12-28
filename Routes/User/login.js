@@ -8,12 +8,13 @@ const { body, validationResult } = require('express-validator')
 const User = require('../../Models/User')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
+const limiter = require('../../Middleware/ratelimit')
 
 // Endpoint 2: When the user log in 
 router.post('/login', [
     body('email', "Enter your email").isEmail(),
     body("password", "Enter your password").isLength({ min: 5 })
-], async (req, res) => {
+],limiter, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
