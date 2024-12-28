@@ -42,7 +42,7 @@ const removeCardDetails = async (id) => {
     try {
         const cardDetails = await paymentCard.exists({ userId: { $eq: id } })
         if (cardDetails) {
-            await cardDetails.deleteMany({ userId: id })
+            await cardDetails.deleteMany({ userId: { $eq: id } })
         }
         else {
             throw Error("no notes found to delete")
