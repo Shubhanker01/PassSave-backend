@@ -4,9 +4,10 @@ const router = express.Router()
 
 // user Model
 const User = require('../../Models/User')
+const limiter = require('../../Middleware/ratelimit')
 
 // Endpoint 4: Show user information
-router.get("/userinfo/:id", async (req, res) => {
+router.get("/userinfo/:id", limiter, async (req, res) => {
     try {
         // destructuring
         let { id } = req.params
