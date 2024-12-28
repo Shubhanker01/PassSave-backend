@@ -11,7 +11,7 @@ const authenticateToken = require('../../Utils/verifyjwt')
 
 const removeUserPasswords = async (id) => {
     try {
-        const userPasswords = await Password.exists({ userId: id })
+        const userPasswords = await Password.exists({ userId: { $eq: id } })
         if (userPasswords) {
             await Password.deleteMany({ userId: id })
         }
@@ -26,7 +26,7 @@ const removeUserPasswords = async (id) => {
 
 const removeBankDetails = async (id) => {
     try {
-        const bankDetails = await bankAccounts.exists({ userId: id })
+        const bankDetails = await bankAccounts.exists({ userId: { $eq: id } })
         if (bankDetails) {
             await bankAccounts.deleteMany({ userId: id })
         }
@@ -40,7 +40,7 @@ const removeBankDetails = async (id) => {
 
 const removeCardDetails = async (id) => {
     try {
-        const cardDetails = await paymentCard.exists({ userId: id })
+        const cardDetails = await paymentCard.exists({ userId: { $eq: id } })
         if (cardDetails) {
             await cardDetails.deleteMany({ userId: id })
         }
