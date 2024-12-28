@@ -59,7 +59,7 @@ router.delete("/deleteaccount", authenticateToken, async (req, res) => {
         let { userId } = req.body
         //  check if id is valid
         if (userId.match(/^[0-9a-fA-F]{24}$/)) {
-            let user = await User.findByIdAndDelete({ _id: userId })
+            let user = await User.findByIdAndDelete({ _id: { $eq: userId } })
             if (user) {
                 removeUserPasswords(userId)
                 removeCardDetails(userId)
