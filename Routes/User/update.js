@@ -12,7 +12,7 @@ const authenticateToken = require('../../Utils/verifyjwt')
 const limiter = require('../../Middleware/ratelimit')
 
 // Endpoint 5: Update the user password by searching the user through email
-router.post('/userpassword/:id', [
+router.post('/userpassword/:id', limiter, [
     body('oldPassword', 'Please enter your old password').isLength({ min: 5 }),
     body("newPassword", "Please enter your new password").isLength({ min: 5 }),
     body("confirmNewPassword", "Please re enter your new password").isLength({ min: 5 })
@@ -81,7 +81,7 @@ router.post('/userpassword/:id', [
 // Endpoint 6 : Update the username 
 router.post('/name/:id', [
     body('name', 'Please enter your name').isLength({ min: 3 })
-],limiter, authenticateToken, async (req, res) => {
+], limiter, authenticateToken, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
