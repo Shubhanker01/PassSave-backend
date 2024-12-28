@@ -9,6 +9,7 @@ const User = require('../../Models/User')
 // import hashData func
 const hashData = require('../../Utils/hashData')
 const authenticateToken = require('../../Utils/verifyjwt')
+const limiter = require('../../Middleware/ratelimit')
 
 // Endpoint 5: Update the user password by searching the user through email
 router.post('/userpassword/:id', [
@@ -80,7 +81,7 @@ router.post('/userpassword/:id', [
 // Endpoint 6 : Update the username 
 router.post('/name/:id', [
     body('name', 'Please enter your name').isLength({ min: 3 })
-], authenticateToken, async (req, res) => {
+],limiter, authenticateToken, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
