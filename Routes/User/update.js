@@ -90,7 +90,7 @@ router.post('/name/:id', [
         let { name } = req.body
         let { id } = req.params
         if (name && typeof (name) === 'string' && id.match(/^[0-9a-fA-F]{24}$/)) {
-            let user = await User.findByIdAndUpdate(id, { name: name }, { new: true })
+            let user = await User.findByIdAndUpdate(id, { name: { $eq: name } }, { new: true })
             if (user) {
                 res.json({
                     status: "Success",
